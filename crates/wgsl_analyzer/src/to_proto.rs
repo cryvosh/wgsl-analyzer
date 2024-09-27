@@ -2,8 +2,7 @@ use base_db::{FileRange, TextRange, TextSize};
 use ide::inlay_hints::{InlayHint, InlayKind};
 use ide_completion::item::{CompletionItem, CompletionItemKind, CompletionRelevance};
 use itertools::Itertools;
-use paths::AbsPath;
-use std::path;
+use paths::{AbsPath, Utf8Component, Utf8Prefix};
 use text_edit::{Indel, TextEdit};
 use vfs::FileId;
 
@@ -19,11 +18,11 @@ use crate::{
 /// When processing non-windows path, this is essentially the same as `Url::from_file_path`.
 pub(crate) fn url_from_abs_path(path: &AbsPath) -> lsp_types::Url {
     let url = lsp_types::Url::from_file_path(path).unwrap();
-    match path.as_ref().components().next() {
-        Some(path::Component::Prefix(prefix))
+    match path.components().next() {
+        Some(Utf8Component::Prefix(prefix))
             if matches!(
                 prefix.kind(),
-                path::Prefix::Disk(_) | path::Prefix::VerbatimDisk(_)
+                Utf8Prefix::Disk(_) | Utf8Prefix::VerbatimDisk(_)
             ) =>
         {
             // Need to lowercase driver letter

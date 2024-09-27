@@ -11,7 +11,7 @@ syntax = { path = "../syntax" }
 tracing = "0.1"
 regex = { version = "1.5.4", default-features = false, features = ["std"] }
 
-vfs = { git = "https://github.com/rust-analyzer/rust-analyzer", rev = "8a23314" }
+vfs = { git = "https://github.com/rust-analyzer/rust-analyzer", rev = "62649a5" }
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"

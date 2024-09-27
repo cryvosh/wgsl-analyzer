@@ -3,6 +3,7 @@ use base_db::{
     line_index::{LineCol, LineColUtf16},
     FilePosition, FileRange, TextRange, TextSize,
 };
+use paths::Utf8PathBuf;
 use vfs::{AbsPathBuf, FileId};
 
 use crate::{
@@ -15,7 +16,10 @@ pub(crate) fn abs_path(url: &lsp_types::Url) -> Result<AbsPathBuf> {
     let path = url
         .to_file_path()
         .map_err(|()| anyhow::anyhow!("url is not a file: {}", url.as_str()))?;
-    Ok(AbsPathBuf::try_from(path).unwrap())
+    AbsPathBuf::try_from(
+        Utf8PathBuf::from_path_buf(path).map_err(|_| anyhow::anyhow!("path is not utf-8"))?,
+    )
+    .map_err(|path| anyhow::anyhow!("path is not absolute: {}", path.as_std_path().display()))
 }
 
 pub(crate) fn vfs_path(url: &lsp_types::Url) -> Result<vfs::VfsPath> {

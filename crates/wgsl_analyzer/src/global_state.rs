@@ -70,8 +70,26 @@ impl GlobalState {
                 return false;
             }
 
-            for file in changed_files {
-                let text = if file.exists() {
+            let mut bytes = vec![];
+            for (_, file) in changed_files {
+                // Clear native diagnostics when their file gets deleted
+                if !file.exists() {
+                    // self.diagnostics.clear_native_for(file.file_id);
+                }
+
+                let text =
+                    if let vfs::Change::Create(v, _) | vfs::Change::Modify(v, _) = file.change {
+                        String::from_utf8(v).ok().map(|text| {
+                            // FIXME: Consider doing normalization in the `vfs` instead? That allows
+                            // getting rid of some locking
+                            let (text, line_endings) = LineEndings::normalize(text);
+                            (text, line_endings)
+                        })
+                    } else {
+                        None
+                    };
+
+                /*let text = if file.exists() {
                     let bytes = vfs.file_contents(file.file_id).to_vec();
                     match String::from_utf8(bytes).ok() {
                         Some(text) => {
@@ -83,9 +101,21 @@ impl GlobalState {
                     }
                 } else {
                     None
-                };
-                change.change_file(file.file_id, text);
+                };*/
+                // change.change_file(file.file_id, text);
+                bytes.push((file.file_id, text));
             }
+
+            bytes.into_iter().for_each(|(file_id, text)| {
+                let text = match text {
+                    None => None,
+                    Some((text, line_endings)) => {
+                        line_endings_map.insert(file_id, line_endings);
+                        Some(text)
+                    }
+                };
+                change.change_file(file_id, text.map(Arc::new));
+            });
             change
         };
 
