@@ -1,55 +1,30 @@
 ---
-name: Bug Report
-about: Report a bug to help us improve!
+name: Bug report
+about: Create a bug report for wgsl-analyzer.
 title: ''
-labels: C-Bug, S-Needs-Triage
+labels: 'C-bug'
 assignees: ''
+
 ---
 
-## `wgsl-analyzer` version
+<!--
+Discord for questions: https://discord.gg/Fk9FQWx28k
 
-The release number or commit hash of the version you're using.
+Please try to provide information which will help us to fix the issue faster.
+Minimal reproducible examples with few dependencies are especially lovely <3.
+-->
 
-## Relevant system information
+**wgsl-analyzer version**: (eg. output of "wgsl-analyzer: Show WA Version" command, accessible in VSCode via <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>)
 
-This section is optional. Remove it if you know that the problem is not platform dependent.
+**editor or extension**: (eg. VSCode, Vim, Emacs, etc. For VSCode users, specify your extension version; for users of other editors, provide the distribution if applicable)
 
-Rust version you're using: (`cargo --version`)
+**relevant settings**: (eg. client settings, or environment variables like `CARGO`, `RUSTC`, `RUSTUP_HOME` or `CARGO_HOME`)
 
-```text
+**repository link (if public, optional)**: (eg. [wgsl-analyzer](https://github.com/wgsl-analyzer/wgsl-analyzer))
 
-```
+**code snippet to reproduce**:
 
-Operating system, including version:
-
-```text
-
-```
-
-Editor name, including version:
-
-```text
+```rust
+// add your code here
 
 ```
-
-## What you did
-
-Describe how you arrived at the problem. If you can, consider providing a code snippet or link.
-
-## What went wrong
-
-If it's not clear, break this out into:
-
-- what were you expecting?
-- what actually happened?
-
-## Additional information
-
-Other information that can be used to further reproduce or isolate the problem.
-This commonly includes:
-
-- screenshots
-- logs
-- theories about what might be going wrong
-- workarounds that you used
-- links to related bugs, PRs or discussions
