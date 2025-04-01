@@ -63,7 +63,11 @@ pub(crate) fn goto_definition(
         _ => 1,
     })?;
 
+    // Get the definition from the token
     let definition = Definition::from_token(sema, file_id.into(), &token)?;
+    
+    // Note: This uses InFile to ensure that the file_id from the original location is used,
+    // not the current file where we're finding the reference
     InFile::new(file_id.into(), definition).to_nav(db.upcast())
 }
 
@@ -79,8 +83,10 @@ impl ToNav for InFile<Local> {
         &self,
         db: &dyn DefDatabase,
     ) -> Option<NavigationTarget> {
+        // Get the binding from the source, which has the correct file ID
         let binding = self.value.source(db)?;
 
+        // This ensures we're using the file_id from the actual source location
         let frange = binding.original_file_range(db);
         let nav = NavigationTarget::from_syntax(frange.file_id, frange.range, None);
         Some(nav)
@@ -99,7 +105,7 @@ impl ToNav for InFile<Definition> {
                     match def {
                         hir::ModuleDef::Function(function) => {
                             let declaration = function.source(db)?;
-
+                            
                             let frange = declaration.original_file_range(db);
                             let focus_range = declaration.value.name().map(|name| {
                                 declaration.with_value(name).original_file_range(db).range
@@ -172,6 +178,7 @@ impl ToNav for InFile<Definition> {
                 },
                 Definition::Struct(r#struct) => {
                     let declaration = r#struct.source(db)?;
+                    
                     let frange = declaration.original_file_range(db);
 
                     let focus_range = declaration
@@ -183,6 +190,7 @@ impl ToNav for InFile<Definition> {
                 },
                 Definition::TypeAlias(type_alias) => {
                     let declaration = type_alias.source(db)?;
+                    
                     let frange = declaration.original_file_range(db);
 
                     let focus_range = declaration

@@ -100,20 +100,28 @@ impl Resolver {
         file_id: HirFileId,
         module_info: Arc<ModuleInfo>,
     ) -> Resolver {
+        // First add all direct imports to the scope
         for item in module_info.items() {
             if let ModuleItem::Import(import) = item {
                 let loc = Location::new(file_id, *import);
                 let import_id = db.intern_import(loc);
                 let import_file = HirFileId::from(ImportFile { import_id });
-                let module_info = db.module_info(import_file);
-                if let Some(file_id) = import_file.original_file(db) {
-                    self = self.push_module_scope(db, file_id.into(), module_info);
+                let import_module_info = db.module_info(import_file);
+                
+                // If we can find the original source file for this import, push its scope
+                if let Some(original_file_id) = import_file.original_file(db) {
+                    let original_file_id = HirFileId::from(original_file_id);
+                    self = self.push_module_scope(db, original_file_id, import_module_info);
                 } else {
-                    info!("Failed to resolve import file for {file_id:?}");
+                    // This import might be a custom import without a direct file
+                    // For these cases, we'll use the imported module info with the original file ID
+                    self = self.push_module_scope(db, file_id, import_module_info);
+                    info!("Using module_info for import without resolving to a file: {file_id:?}");
                 }
             }
         }
 
+        // Then add the current module's scope
         self.scopes.push(Scope::ModuleScope(ModuleScope {
             module_info,
             file_id,
