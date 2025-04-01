@@ -96,103 +96,103 @@ impl ToNav for InFile<Definition> {
             Definition::Local(local) => InFile::new(self.file_id, *local).to_nav(db)?,
             Definition::ModuleDef(def) => match def {
                 hir::ModuleDef::Function(function) => {
-                    let declaration = function.source(db)?;
+                    let decl = function.source(db)?;
                     
-                    let frange = declaration.original_file_range(db);
-                    let focus_range = declaration.value.name().map(|name| {
-                        declaration.with_value(name).original_file_range(db).range
+                    let frange = decl.original_file_range(db);
+                    let focus_range = decl.value.name().map(|name| {
+                        decl.with_value(name).original_file_range(db).range
                     });
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
                 hir::ModuleDef::GlobalVariable(var) => {
-                    let declaration = var.source(db)?;
+                    let decl = var.source(db)?;
 
-                    let frange = declaration.original_file_range(db);
-                    let focus_range = declaration
+                    let frange = decl.original_file_range(db);
+                    let focus_range = decl
                         .value
                         .binding()
-                        .map(|name| declaration.with_value(name).original_file_range(db).range);
+                        .map(|name| decl.with_value(name).original_file_range(db).range);
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
                 hir::ModuleDef::GlobalConstant(constant) => {
-                    let declaration = constant.source(db)?;
+                    let decl = constant.source(db)?;
 
-                    let frange = declaration.original_file_range(db);
-                    let focus_range = declaration
+                    let frange = decl.original_file_range(db);
+                    let focus_range = decl
                         .value
                         .binding()
-                        .map(|name| declaration.with_value(name).original_file_range(db).range);
+                        .map(|name| decl.with_value(name).original_file_range(db).range);
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
                 hir::ModuleDef::Override(override_decl) => {
-                    let declaration = override_decl.source(db)?;
+                    let decl = override_decl.source(db)?;
 
-                    let frange = declaration.original_file_range(db);
-                    let focus_range = declaration
+                    let frange = decl.original_file_range(db);
+                    let focus_range = decl
                         .value
                         .binding()
-                        .map(|name| declaration.with_value(name).original_file_range(db).range);
+                        .map(|name| decl.with_value(name).original_file_range(db).range);
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
                 hir::ModuleDef::Struct(r#struct) => {
-                    let declaration = r#struct.source(db)?;
+                    let decl = r#struct.source(db)?;
                     
-                    let frange = declaration.original_file_range(db);
+                    let frange = decl.original_file_range(db);
 
-                    let focus_range = declaration
+                    let focus_range = decl
                         .value
                         .name()
-                        .map(|name| declaration.with_value(name).original_file_range(db).range);
+                        .map(|name| decl.with_value(name).original_file_range(db).range);
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
                 hir::ModuleDef::TypeAlias(type_alias) => {
-                    let declaration = type_alias.source(db)?;
+                    let decl = type_alias.source(db)?;
                     
-                    let frange = declaration.original_file_range(db);
+                    let frange = decl.original_file_range(db);
 
-                    let focus_range = declaration
+                    let focus_range = decl
                         .value
                         .name()
-                        .map(|name| declaration.with_value(name).original_file_range(db).range);
+                        .map(|name| decl.with_value(name).original_file_range(db).range);
 
                     NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
                 },
             },
             Definition::Field(field) => {
-                let declaration = field.source(db)?;
+                let decl = field.source(db)?;
 
-                let frange = declaration.original_file_range(db);
-                let focus_range = declaration
+                let frange = decl.original_file_range(db);
+                let focus_range = decl
                     .value
                     .variable_ident_decl()
-                    .map(|name| declaration.with_value(name).original_file_range(db).range);
+                    .map(|name| decl.with_value(name).original_file_range(db).range);
 
                 NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
             },
             Definition::Struct(r#struct) => {
-                let declaration = r#struct.source(db)?;
-                let frange = declaration.original_file_range(db);
+                let decl = r#struct.source(db)?;
+                let frange = decl.original_file_range(db);
 
-                let focus_range = declaration
+                let focus_range = decl
                     .value
                     .name()
-                    .map(|name| declaration.with_value(name).original_file_range(db).range);
+                    .map(|name| decl.with_value(name).original_file_range(db).range);
 
                 NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
             },
             Definition::TypeAlias(type_alias) => {
-                let declaration = type_alias.source(db)?;
-                let frange = declaration.original_file_range(db);
+                let decl = type_alias.source(db)?;
+                let frange = decl.original_file_range(db);
 
-                let focus_range = declaration
+                let focus_range = decl
                     .value
                     .name()
-                    .map(|name| declaration.with_value(name).original_file_range(db).range);
+                    .map(|name| decl.with_value(name).original_file_range(db).range);
 
                 NavigationTarget::from_syntax(frange.file_id, frange.range, focus_range)
             },
