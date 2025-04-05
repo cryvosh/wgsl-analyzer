@@ -746,21 +746,21 @@ impl<'db> InferenceContext<'db> {
                             "exchanged" => self.bool_ty(),
                             _ => {
                                 self.push_diagnostic(InferenceDiagnostic::NoSuchField {
-                                    expr: field_expr,
+                                    expression: field_expression,
                                     name: name.clone(),
-                                    ty: expr_ty,
+                                    ty: expression_ty,
                                 });
-                                self.err_ty()
+                                self.error_ty()
                             }
                         }
                     },
                     _ => {
                         self.push_diagnostic(InferenceDiagnostic::NoSuchField {
-                            expr: field_expr,
+                            expression: field_expression,
                             name: name.clone(),
-                            ty: expr_ty,
+                            ty: expression_ty,
                         });
-                        self.err_ty()
+                        self.error_ty()
                     },
                 }
             },
@@ -1360,9 +1360,9 @@ impl<'db> InferenceContext<'db> {
             | TyKind::Atomic(_)
             | TyKind::StorageTypeOfTexelFormat(_)
             | TyKind::AtomicCompareExchangeResult(_) => {
-                self.push_diagnostic(InferenceDiagnostic::InvalidConstructionType { expr, ty })
+                self.push_diagnostic(InferenceDiagnostic::InvalidConstructionType { expression, ty })
             },
-            TyKind::BoundVar(_) | TyKind::Ref(_) => unreachable!(),
+            TyKind::BoundVar(_) | TyKind::Reference(_) => unreachable!(),
             TyKind::Error => {},
         }
     }
