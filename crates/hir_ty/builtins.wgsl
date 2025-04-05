@@ -401,7 +401,7 @@ atomicAnd(ptr<atomic<T>>, T) -> T
 atomicOr(ptr<atomic<T>>, T) -> T
 atomicXor(ptr<atomic<T>>, T) -> T
 atomicExchange(ptr<atomic<T>>, T) -> T
-// TODO atomicCompareExchangeWeak
+atomicCompareExchangeWeak(ptr<atomic<T>>, T, T) -> __atomic_compare_exchange_result<T>
 
 // data packing
 pack4x8snorm(vec4<f32>) -> u32

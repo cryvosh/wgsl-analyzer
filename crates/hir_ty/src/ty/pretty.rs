@@ -229,5 +229,10 @@ fn write_ty(
         TyKind::StorageTypeOfTexelFormat(var) => {
             write!(f, "{}::StorageType", ('F'..).nth(var.index).unwrap())
         },
+        TyKind::AtomicCompareExchangeResult(inner_ty) => {
+            write!(f, "__atomic_compare_exchange_result<")?;
+            write_ty(db, inner_ty, f, verbosity)?;
+            write!(f, ">")
+        }
     }
 }

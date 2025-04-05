@@ -94,6 +94,7 @@ pub enum TyKind {
     Ptr(Ptr),
     BoundVar(BoundVar),
     StorageTypeOfTexelFormat(BoundVar), // e.g. rgba8unorm -> vec4<f32>
+    AtomicCompareExchangeResult(Ty),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -264,6 +265,7 @@ impl TyKind {
             TyKind::Array(array) => array.inner.contains_struct(db, r#struct),
             TyKind::Ref(r) => r.inner.contains_struct(db, r#struct),
             TyKind::Ptr(ptr) => ptr.inner.contains_struct(db, r#struct),
+            TyKind::AtomicCompareExchangeResult(inner) => inner.contains_struct(db, r#struct),
             _ => false,
         }
     }

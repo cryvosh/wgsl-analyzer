@@ -711,6 +711,20 @@ impl<'db> InferenceContext<'db> {
                         });
                         self.err_ty()
                     },
+                    TyKind::AtomicCompareExchangeResult(inner_ty) => {
+                        match name.as_str() {
+                            "old_value" => inner_ty,
+                            "exchanged" => self.bool_ty(),
+                            _ => {
+                                self.push_diagnostic(InferenceDiagnostic::NoSuchField {
+                                    expr: field_expr,
+                                    name: name.clone(),
+                                    ty: expr_ty,
+                                });
+                                self.err_ty()
+                            }
+                        }
+                    },
                     _ => {
                         self.push_diagnostic(InferenceDiagnostic::NoSuchField {
                             expr: field_expr,
@@ -1283,7 +1297,8 @@ impl<'db> InferenceContext<'db> {
             | TyKind::Sampler(_)
             | TyKind::Ptr(_)
             | TyKind::Atomic(_)
-            | TyKind::StorageTypeOfTexelFormat(_) => {
+            | TyKind::StorageTypeOfTexelFormat(_)
+            | TyKind::AtomicCompareExchangeResult(_) => {
                 self.push_diagnostic(InferenceDiagnostic::InvalidConstructionType { expr, ty })
             },
             TyKind::BoundVar(_) | TyKind::Ref(_) => unreachable!(),
@@ -1415,6 +1430,10 @@ impl UnificationTable {
             TyKind::StorageTypeOfTexelFormat(var) => {
                 let format = self.texel_format_vars[&var];
                 storage_type_of_texel_format(db, format)
+            },
+            TyKind::AtomicCompareExchangeResult(inner) => {
+                let inner = self.resolve(db, inner);
+                TyKind::AtomicCompareExchangeResult(inner).intern(db)
             },
             _ => ty,
         }
@@ -1577,6 +1596,13 @@ fn unify(
                 unify(db, table, sampled_ty, found_sampled_ty)?;
 
                 Ok(())
+            },
+            _ => Err(()),
+        },
+
+        TyKind::AtomicCompareExchangeResult(expected_inner) => match found_kind {
+            TyKind::AtomicCompareExchangeResult(found_inner) => {
+                unify(db, table, expected_inner, found_inner)
             },
             _ => Err(()),
         },

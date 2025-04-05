@@ -34,6 +34,7 @@ enum Type {
     Atomic(Box<Type>),
     Bound(usize),
     StorageTypeOfTexelFormat(usize),
+    AtomicCompareExchangeResult(Box<Type>),
 }
 
 enum VecSize {
@@ -330,6 +331,9 @@ fn parse_ty(
         } else if ty == "atomic" {
             let inner = parse_ty(generics, inner);
             return Type::Atomic(Box::new(inner));
+        } else if ty == "__atomic_compare_exchange_result" {
+            let inner = parse_ty(generics, inner);
+            return Type::AtomicCompareExchangeResult(Box::new(inner));
         } else {
             unimplemented!("{}", ty);
         }
@@ -444,14 +448,16 @@ fn type_to_rust(ty: &Type) -> String {
             type_to_rust(inner)
         ),
         Type::Atomic(inner) => format!(
-            "TyKind::Atomic(AtomicType {{
-            inner: {},
-        }}).intern(db)",
+            "TyKind::Atomic(AtomicType {{\n            inner: {},\n        }}).intern(db)",
             type_to_rust(inner)
         ),
         Type::StorageTypeOfTexelFormat(var) => format!(
             "TyKind::StorageTypeOfTexelFormat(BoundVar {{ index: {} }}).intern(db)",
             var
+        ),
+        Type::AtomicCompareExchangeResult(inner) => format!(
+            "TyKind::AtomicCompareExchangeResult({}).intern(db)",
+            type_to_rust(inner)
         ),
     }
 }
